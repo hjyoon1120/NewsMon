@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.newsmon.dao.TechNewsDAO">
+
+	<insert id="create">
+		insert into tb_tech_news (title, subtitle,
+		content, reporter_id, press, query)
+		values(#{title}, #{subtitle}, #{content},
+		#{reporter_id}, #{press}, #{query})
+	</insert>
+	
+	<select id="today" resultType="TechNewsVO">
+		select tb_tech_news.*, tb_users.nickname from tb_tech_news, tb_users 
+		where tb_tech_news.reporter_id = tb_users.uid order by tno desc limit 1;
+	</select>
+
+	<select id="read" resultType="TechNewsVO">
+		select tb_tech_news.*, tb_users.nickname from tb_tech_news, tb_users 
+		where tb_tech_news.tno = #{tno} and tb_tech_news.reporter_id = tb_users.uid
+	</select>
+
+	<update id="update">
+		update tb_tech_news
+		set title =#{title}, subtitle =#{subtitle}, content =#{content}, 
+		press =#{press}, query=#{query}, uptdate = now()
+		where tno = #{tno}
+	</update>
+	
+	<delete id="delete">
+		delete from tb_tech_news where tno =#{tno}
+	</delete>
+	
+	<select id="list" resultType="TechNewsVO">
+		<![CDATA[
+		select tb_tech_news.*, tb_users.nickname 
+		from tb_tech_news, tb_users
+		where tb_tech_news.tno > 0 and tb_tech_news.reporter_id = tb_users.uid
+		order by tb_tech_news.tno desc, tb_tech_news.regdate desc
+		limit #{pageStart}, #{perPageNum}
+		]]>
+	</select>
+	
+	<select id="cntPaging" resultType = "int">
+		<![CDATA[
+		select count(tb_tech_news.tno) from tb_tech_news, tb_users 
+		where tb_tech_news.tno > 0 and tb_users.uid = tb_tech_news.reporter_id
+		]]>
+	</select>
+	
+	<update id="uptReplyCnt">
+		update tb_tech_news set replycnt = replycnt + #{amount} where tno = #{tno}
+	</update>
+	
+	<update id="uptViewCnt">
+		update tb_tech_news set viewcnt = viewcnt + 1 where tno = #{tno}
+	</update>
+	
+	<update id="uptTodayViewCnt">
+		update tb_tech_news set viewcnt = viewcnt + 1 order by tno desc limit 1
+	</update> 
+	
+	<update id="uptVoteCnt_positive">
+		update tb_tech_news set votecnt_positive = votecnt_positive + #{amount} where tno = #{tno}
+	</update>
+	
+	<update id="uptVoteCnt_negative">
+		update tb_tech_news set votecnt_negative = votecnt_negative + #{amount} where tno = #{tno}
+	</update>
+	
+	<update id="calcRate">
+		update tb_tech_news set vote_rate = #{vote_rate} where tno = #{tno}
+	</update>
+	
+	<insert id="addAttach">
+		insert into tb_tech_attach(fullname, tno) values (#{fullName}, LAST_INSERT_ID())
+	</insert>
+	
+	<select id="getAttach" resultType="string">
+		select fullname from tb_tech_attach where tno = #{tno} order by regdate
+	</select>
+	
+	<delete  id="deleteAttach">
+		delete from tb_tech_attach where tno = #{tno}
+	</delete>
+	
+	<insert id ="replaceAttach">
+		insert into tb_tech_attach(fullname, tno) values (#{fullName}, #{tno})
+	</insert>
+</mapper>

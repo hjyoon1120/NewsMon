@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.newsmon.dao.SearchDAO">
+
+	<select id="societyList" resultType="SocietyNewsVO">
+		<![CDATA[
+		select tb_society_news.*, tb_users.nickname 
+		from tb_society_news, tb_users 
+		where tb_society_news.sno > 0
+		and tb_society_news.reporter_id = tb_users.uid
+		
+		]]>
+		
+		<include refid="search"></include>
+		
+		<![CDATA[
+		order by tb_society_news.sno desc, tb_society_news.regdate desc
+		limit #{pageStart}, #{perPageNum}
+		]]>
+	</select>
+	
+	<select id="societyCnt" resultType = "int">
+		<![CDATA[
+		select count(tb_society_news.sno) 
+		from tb_society_news, tb_users
+		where tb_society_news.sno > 0 
+		and tb_users.uid = tb_society_news.reporter_id
+		]]>
+		
+		<include refid="search"></include>
+		
+	</select>
+	
+	<sql id="search">
+		<if test="keyword!=null">
+			and ( tb_society_news.title like CONCAT('%', #{keyword}, '%')
+				or tb_society_news.subtitle like CONCAT('%', #{keyword}, '%')
+				or tb_society_news.content like CONCAT('%', #{keyword}, '%'))
+		</if>
+		
+		<!-- <if test="keyword!=null">
+			and ( user_id like CONCAT('%', #{keyword}, '%')
+			or body like CONCAT('%', #{keyword}, '%')
+			or writer like CONCAT('%', #{keyword}, '%')
+			)
+		</if> -->
+	</sql>
+</mapper>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.newsmon.dao.UserDAO">
+	
+	<select id="login" resultType="UserVO">
+		select * from tb_users where email= #{email} and pw = #{pw}
+	</select>
+	
+	<update id="keepLogin">
+		update tb_users set sessionKey = #{sessionId}, sessionLimit = #{next} where uid = #{uid}
+	</update>
+	
+	<select id="checkUserWithSessionKey" resultType ="UserVO">
+		select * from tb_user where sessionKey = #{value}
+		and sessionlimit > now()
+	</select>
+	
+	<insert id="addAccount">
+		insert into tb_users(pw, email, nickname, isreporter)
+		values (#{pw}, #{email}, #{nickname}, #{isreporter})
+	</insert>
+	
+	<select id="readAccount" resultType="UserVO">
+		select * from tb_users where uid = #{uid}
+	</select>
+	
+	<update id="uptAccount">
+		update tb_users set nickname = #{nickname} where uid= #{uid}
+	</update>
+	
+	<delete id="delAccount">
+		delete from tb_users where uid = #{uid}
+	</delete>
+	
+	<select id="listAccount" resultType="UserVO">
+		<![CDATA[
+		select * from tb_users where id > 0
+		]]>
+		
+		<include refid="search"></include>
+		
+		<![CDATA[
+			order by uid desc, regdate desc
+			limit #{pageStart}, #{perPageNum}
+		]]>
+	</select>
+	
+	<select id="cntPaging" resultType="int">
+		<![CDATA[
+		select count(uid) from tb_users where uid>0
+		]]>
+		<include refid = "search"></include>
+	</select>
+	
+	<sql id="search">
+		<if test="keyword != null">
+			and(nickname like CONCAT('%', #{keyword}, '%')
+			or email like CONCAT('%', #{keyword}, '%'))
+		</if>
+	</sql>
+	
+
+</mapper>

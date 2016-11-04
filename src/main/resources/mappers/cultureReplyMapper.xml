@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.newsmon.dao.CultureReplyDAO">
+	
+	<select id="showAll" resultType="CultureReplyVO">
+		select tb_culture_reply.*, tb_users.nickname
+		from tb_culture_reply, tb_users
+		where tb_culture_reply.cno = #{cno}
+		and tb_culture_reply.replyer_id = tb_users.uid
+		order by tb_culture_reply.rno desc, tb_culture_reply.regdate desc
+	</select>
+	
+	<select id="list" resultType="CultureReplyVO">
+		select tb_culture_reply.*, tb_users.nickname
+		from tb_culture_reply, tb_users
+		where tb_culture_reply.cno = #{cno}
+		and tb_culture_reply.replyer_id = tb_users.uid
+		order by tb_culture_reply.rno desc, tb_culture_reply.regdate desc 
+		limit
+		#{cri_ten.pageStart}, #{cri_ten.perPageNum}
+	</select>
+
+	<insert id="create">
+		insert into tb_culture_reply (cno, replytext,
+		replyer_id)
+		values(#{cno}, #{replytext}, #{replyer_id})
+	</insert>
+
+	<update id="update">
+		update tb_culture_reply
+		set replytext =#{replytext},
+		uptdate = now()
+		where rno = #{rno}
+	</update>
+
+	<delete id="delete">
+		delete from tb_culture_reply where rno =#{rno}
+	</delete>
+
+	<select id="cntReply" resultType="int">
+		select count(cno) from
+		tb_culture_reply where cno=#{cno}
+	</select>
+	
+	<select id="getCno" resultType="int">
+		select cno from tb_culture_reply where rno = #{rno}
+	</select>
+</mapper>

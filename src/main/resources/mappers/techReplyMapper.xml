@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.newsmon.dao.TechReplyDAO">
+
+	<select id="showAll" resultType="TechReplyVO">
+		select tb_tech_reply.*,
+		tb_users.nickname
+		from tb_tech_reply, tb_users
+		where tb_tech_reply.tno =
+		#{tno}
+		and tb_tech_reply.replyer_id = tb_users.uid
+		order by
+		tb_tech_reply.rno desc, tb_tech_reply.regdate desc
+	</select>
+
+	<select id="list" resultType="TechReplyVO">
+		select tb_tech_reply.*,
+		tb_users.nickname
+		from tb_tech_reply, tb_users
+		where tb_tech_reply.tno =
+		#{tno}
+		and tb_tech_reply.replyer_id = tb_users.uid
+		order by
+		tb_tech_reply.rno desc, tb_tech_reply.regdate desc
+		limit
+		#{cri_ten.pageStart}, #{cri_ten.perPageNum}
+	</select>
+
+	<insert id="create">
+		insert into tb_tech_reply (tno, replytext,
+		replyer_id)
+		values(#{tno}, #{replytext}, #{replyer_id})
+	</insert>
+
+	<update id="update">
+		update tb_tech_reply
+		set replytext =#{replytext},
+		uptdate = now()
+		where rno = #{rno}
+	</update>
+
+	<delete id="delete">
+		delete from tb_tech_reply where rno =#{rno}
+	</delete>
+
+	<select id="cntReply" resultType="int">
+		select count(tno) from
+		tb_tech_reply where tno=#{tno}
+	</select>
+
+	<select id="getTno" resultType="int">
+		select tno from tb_tech_reply
+		where rno = #{rno}
+	</select>
+</mapper>

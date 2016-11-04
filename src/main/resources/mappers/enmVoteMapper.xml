@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.newsmon.dao.EnmVoteDAO">
+	
+	<select id="showAll" resultType="EnmVoteVO">
+		select tb_enm_vote.*, tb_users.nickname
+		from tb_enm_vote, tb_users
+		where tb_enm_vote.eno = #{eno}
+		and tb_enm_vote.voter_id = tb_users.uid
+		order by vno asc, regdate desc
+	</select>
+	
+	<select id="voteList" resultType ="EnmVoteVO">
+		select tb_enm_vote.*, tb_users.nickname
+		from tb_enm_vote, tb_users
+		where tb_enm_vote.eno = #{eno} 
+		and tb_enm_vote.voter_id = tb_users.uid
+		order by tb_enm_vote.vno desc
+		limit #{cri_ten.pageStart}, #{cri_ten.perPageNum}
+	</select>
+	
+	<insert id="vote">
+		insert into tb_enm_vote (eno, voter_id, result)
+		values(#{eno}, #{voter_id}, #{result})
+	</insert>
+	
+	<update id="revote">
+		update tb_enm_vote
+		set result=#{result}, uptdate = now()
+		where vno = #{vno}
+	</update>
+	
+	<select id="cntVote" resultType = "int">
+		select count(eno) from tb_enm_vote where eno=#{eno}
+	</select>
+	
+	<select id="cntPositive" resultType="int">
+		select count(eno) from tb_enm_vote where eno=#{eno} and result = 'positive'
+	</select>
+	
+	<select id="cntNegative" resultType="int">
+		select count(eno) from tb_enm_vote where eno =#{eno} and result = 'negative'
+	</select>
+	
+	<select id="getEno" resultType="int">
+		select eno from tb_enm_vote where vno = #{vno}
+	</select>
+</mapper>

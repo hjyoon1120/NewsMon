@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.newsmon.dao.SocietyVoteDAO">
+	
+	<select id="showAll" resultType="SocietyVoteVO">
+		select * from tb_society_vote
+		where sno = #{sno}
+		order by vno asc, regdate desc
+	</select>
+	
+	<select id="vote">
+		insert into tb_society_vote (sno, voter_id, choice)
+		values(#{sno}, #{voter_id}, #{choice})
+	</select>
+	
+	<update id="revote">
+		update tb_society_vote
+		set choice=#{choice}, uptdate = now()
+		where vno = #{vno}
+	</update>
+	
+	<select id="cntVote" resultType = "int">
+		select count(sno) from tb_society_vote where sno=#{sno} and choice=#{choice}
+	</select>
+	
+	<select id="getSno" resultType="int">
+		select sno from tb_society_vote where vno = #{vno}
+	</select>
+</mapper>

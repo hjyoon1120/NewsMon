@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.newsmon.dao.PeopleVoteDAO">
+	
+	<select id="showAll" resultType="PeopleVoteVO">
+		select tb_people_vote.*, tb_users.nickname
+		from tb_people_vote, tb_users
+		where tb_people_vote.pno = #{pno}
+		and tb_people_vote.voter_id = tb_users.uid
+		order by vno asc, regdate desc
+	</select>
+	
+	<select id="voteList" resultType ="PeopleVoteVO">
+		select tb_people_vote.*, tb_users.nickname
+		from tb_people_vote, tb_users
+		where tb_people_vote.pno = #{pno} 
+		and tb_people_vote.voter_id = tb_users.uid
+		order by tb_people_vote.vno desc
+		limit #{cri_ten.pageStart}, #{cri_ten.perPageNum}
+	</select>
+	
+	<insert id="vote">
+		insert into tb_people_vote (pno, voter_id, isPositive)
+		values(#{pno}, #{voter_id}, #{isPositive})
+	</insert>
+	
+	<update id="revote">
+		update tb_people_vote
+		set isPositive=#{isPositive}, uptdate = now()
+		where vno = #{vno}
+	</update>
+	
+	<select id="cntVote" resultType = "int">
+		select count(pno) from tb_people_vote where pno=#{pno}
+	</select>
+	
+	<select id="cntPositive" resultType="int">
+		select count(pno) from tb_people_vote where pno=#{pno} and isPositive = true
+	</select>
+	
+	<select id="cntNegative" resultType="int">
+		select count(pno) from tb_people_vote where pno =#{pno} and isPositive = false
+	</select>
+	
+	<select id="getPno" resultType="int">
+		select pno from tb_people_vote where vno = #{vno}
+	</select>
+</mapper>

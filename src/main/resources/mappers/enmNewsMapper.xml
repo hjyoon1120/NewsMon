@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.newsmon.dao.EnmNewsDAO">
+
+	<insert id="create">
+		insert into tb_enm_news (title, subtitle,
+		content, reporter_id, press, query)
+		values(#{title}, #{subtitle}, #{content},
+		#{reporter_id}, #{press}, #{query})
+	</insert>
+	
+	<select id="today" resultType="EnmNewsVO">
+		select tb_enm_news.*, tb_users.nickname from tb_enm_news, tb_users 
+		where tb_enm_news.reporter_id = tb_users.uid order by eno desc limit 1;
+	</select>
+
+	<select id="read" resultType="EnmNewsVO">
+		select tb_enm_news.*, tb_users.nickname from tb_enm_news, tb_users 
+		where tb_enm_news.eno = #{eno} and tb_enm_news.reporter_id = tb_users.uid
+	</select>
+
+	<update id="update">
+		update tb_enm_news
+		set title =#{title}, subtitle =#{subtitle}, content =#{content}, 
+		press =#{press}, query=#{query}, uptdate = now()
+		where eno = #{eno}
+	</update>
+	
+	<delete id="delete">
+		delete from tb_enm_news where eno =#{eno}
+	</delete>
+	
+	<select id="list" resultType="EnmNewsVO">
+		<![CDATA[
+		select tb_enm_news.*, tb_users.nickname 
+		from tb_enm_news, tb_users
+		where tb_enm_news.eno > 0 and tb_enm_news.reporter_id = tb_users.uid
+		order by tb_enm_news.eno desc, tb_enm_news.regdate desc
+		limit #{pageStart}, #{perPageNum}
+		]]>
+	</select>
+	
+	<select id="cntPaging" resultType = "int">
+		<![CDATA[
+		select count(tb_enm_news.eno) from tb_enm_news, tb_users 
+		where tb_enm_news.eno > 0 and tb_users.uid = tb_enm_news.reporter_id
+		]]>
+	</select>
+	
+	<update id="uptReplyCnt">
+		update tb_enm_news set replycnt = replycnt + #{amount} where eno = #{eno}
+	</update>
+	
+	<update id="uptViewCnt">
+		update tb_enm_news set viewcnt = viewcnt + 1 where eno = #{eno}
+	</update>
+	
+	<update id="uptTodayViewCnt">
+		update tb_enm_news set viewcnt = viewcnt + 1 order by eno desc limit 1
+	</update> 
+	
+	<update id="uptVoteCnt_positive">
+		update tb_enm_news set votecnt_positive = votecnt_positive + #{amount} where eno = #{eno}
+	</update>
+	
+	<update id="uptVoteCnt_negative">
+		update tb_enm_news set votecnt_negative = votecnt_negative + #{amount} where eno = #{eno}
+	</update>
+	
+	<update id="calcRate">
+		update tb_enm_news set vote_rate = #{vote_rate} where eno = #{eno}
+	</update>
+	
+	<insert id="addAttach">
+		insert into tb_enm_attach(fullname, eno) values (#{fullName}, LAST_INSERT_ID())
+	</insert>
+	
+	<select id="getAttach" resultType="string">
+		select fullname from tb_enm_attach where eno = #{eno} order by regdate
+	</select>
+	
+	<delete  id="deleteAttach">
+		delete from tb_enm_attach where eno = #{eno}
+	</delete>
+	
+	<insert id ="replaceAttach">
+		insert into tb_enm_attach(fullname, eno) values (#{fullName}, #{eno})
+	</insert>
+	
+	<update id="uptVoteRate">
+		update tb_enm_news
+		set vote_rate =#{vote_rate}
+		where eno = #{eno}
+	</update>
+</mapper>

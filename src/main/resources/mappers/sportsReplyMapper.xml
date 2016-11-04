@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.newsmon.dao.SportsReplyDAO">
+	
+	<select id="showAll" resultType="SportsReplyVO">
+		select tb_sports_reply.*, tb_users.nickname
+		from tb_sports_reply, tb_users
+		where tb_sports_reply.sno = #{sno}
+		and tb_sports_reply.replyer_id = tb_users.uid
+		order by tb_sports_reply.rno desc, tb_sports_reply.regdate desc
+	</select>
+	
+	<select id="list" resultType="SportsReplyVO">
+		select tb_sports_reply.*, tb_users.nickname
+		from tb_sports_reply, tb_users
+		where tb_sports_reply.sno = #{sno}
+		and tb_sports_reply.replyer_id = tb_users.uid
+		order by tb_sports_reply.rno desc, tb_sports_reply.regdate desc 
+		limit
+		#{cri_ten.pageStart}, #{cri_ten.perPageNum}
+	</select>
+
+	<insert id="create">
+		insert into tb_sports_reply (sno, replytext,
+		replyer_id)
+		values(#{sno}, #{replytext}, #{replyer_id})
+	</insert>
+
+	<update id="update">
+		update tb_sports_reply
+		set replytext =#{replytext},
+		uptdate = now()
+		where rno = #{rno}
+	</update>
+
+	<delete id="delete">
+		delete from tb_sports_reply where rno =#{rno}
+	</delete>
+
+	<select id="cntReply" resultType="int">
+		select count(sno) from
+		tb_sports_reply where sno=#{sno}
+	</select>
+	
+	<select id="getSno" resultType="int">
+		select sno from tb_sports_reply where rno = #{rno}
+	</select>
+</mapper>

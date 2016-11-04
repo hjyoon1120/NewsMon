@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.newsmon.dao.CultureVoteDAO">
+	
+	<select id="showAll" resultType="CultureVoteVO">
+		select tb_culture_vote.*, tb_users.nickname
+		from tb_culture_vote, tb_users
+		where tb_culture_vote.cno = #{cno}
+		and tb_culture_vote.voter_id = tb_users.uid
+		order by vno asc, regdate desc
+	</select>
+	
+	<select id="voteList" resultType ="CultureVoteVO">
+		select tb_culture_vote.*, tb_users.nickname
+		from tb_culture_vote, tb_users
+		where tb_culture_vote.cno = #{cno} 
+		and tb_culture_vote.voter_id = tb_users.uid
+		order by tb_culture_vote.vno desc
+		limit #{cri_ten.pageStart}, #{cri_ten.perPageNum}
+	</select>
+	
+	<insert id="vote">
+		insert into tb_culture_vote (cno, voter_id, isPositive)
+		values(#{cno}, #{voter_id}, #{isPositive})
+	</insert>
+	
+	<update id="revote">
+		update tb_culture_vote
+		set isPositive=#{isPositive}, uptdate = now()
+		where vno = #{vno}
+	</update>
+	
+	<select id="cntVote" resultType = "int">
+		select count(cno) from tb_culture_vote where cno=#{cno}
+	</select>
+	
+	<select id="cntPositive" resultType="int">
+		select count(cno) from tb_culture_vote where cno=#{cno} and isPositive = true
+	</select>
+	
+	<select id="cntNegative" resultType="int">
+		select count(cno) from tb_culture_vote where cno =#{cno} and isPositive = false
+	</select>
+	
+	<select id="getCno" resultType="int">
+		select cno from tb_culture_vote where vno = #{vno}
+	</select>
+</mapper>
